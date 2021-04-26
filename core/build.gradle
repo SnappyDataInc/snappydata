@@ -190,6 +190,9 @@ if (rootProject.hasProperty('enablePublish')) {
 }
 
 scalaTest {
+  if (rootProject.hasProperty('native.enabled')) {
+    environment 'SNAPPY_NATIVE_ENABLED': rootProject.property('native.enabled')
+  }
   dependsOn ':cleanScalaTest'
   doFirst {
     // cleanup files since scalatest plugin does not honour workingDir yet
