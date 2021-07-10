@@ -35,11 +35,10 @@ object ValidateDMLOpApp {
     val outputFile = "DMLOpsApp_thr_" + threadID + "_" + System.currentTimeMillis + ".out"
     val pw = new PrintWriter(new FileOutputStream(new File(outputFile), true))
     val stmt = args(0)
-
     // scalastyle:off println
     pw.println(s"stmt : ${stmt}")
-    val tableName = args(1)
     pw.println(s"Executing ${stmt}")
+    pw.flush()
     val startTime = System.currentTimeMillis
     val df = snc.sql(stmt)
     val endTime = System.currentTimeMillis

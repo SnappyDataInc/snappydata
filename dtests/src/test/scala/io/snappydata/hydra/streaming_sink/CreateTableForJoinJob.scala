@@ -74,7 +74,7 @@ class CreateTableForJoinJob extends SnappySQLJob{
         s"hasChildren boolean," +
         s"numChild int," +
         s"hasSiblings boolean, " +
-        s"language varchar(10)" +
+        s"languages varchar(10)" +
         s" $primaryKey" +
         s") using $provider $options"
     pw.println(s"Creating table $s")

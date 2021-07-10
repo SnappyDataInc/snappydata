@@ -891,6 +891,7 @@ public class SnappyTest implements Serializable {
    * the test for stopping all locators which have been started in the test.
    **/
   public static synchronized void restoreLocatorConfigData() {
+    if(snappyTest == null) snappyTest = new SnappyTest();
     snappyTest.restoreConfigData("locators");
   }
 
@@ -904,6 +905,7 @@ public class SnappyTest implements Serializable {
    * which have been started in the test.
    **/
   public static synchronized void restoreServerConfigData() {
+    if(snappyTest == null) snappyTest = new SnappyTest();
     snappyTest.restoreConfigData("servers");
   }
 
@@ -917,6 +919,7 @@ public class SnappyTest implements Serializable {
    * which have been started in the test.
    **/
   public static synchronized void restoreLeadConfigData() {
+    if(snappyTest == null) snappyTest = new SnappyTest();
     snappyTest.restoreConfigData("leads");
   }
 
@@ -1850,20 +1853,7 @@ public class SnappyTest implements Serializable {
   }
 
   public synchronized void recordSnappyProcessIDinNukeRun(String pName) {
-    Process pr = null;
-    try {
-      File log = new File(".");
-      String dest = log.getCanonicalPath() + File.separator + "PIDs_" + pName + "_" + HostHelper
-          .getLocalHost() +
-          ".log";
-      File logFile = new File(dest);
-      if (!logFile.exists()) {
-        recordProcessIds(pName, HostHelper.getLocalHost(), logFile);
-      }
-    } catch (IOException e) {
-      String s = "Problem while starting the process : " + pr;
-      throw new TestException(s, e);
-    }
+    recordSnappyProcessIDinNukeRun(pName, HostHelper.getLocalHost());
   }
 
   protected synchronized void recordSnappyProcessIDinNukeRun(String pName, String hostName) {
@@ -1874,18 +1864,10 @@ public class SnappyTest implements Serializable {
       String dest = log.getCanonicalPath() + File.separator + "PIDs_" + pName + "_" + hostName + ".log";
       File logFile = new File(dest);
       if (!logFile.exists()) {
-        String command;
-        command = "ssh -n -x -o PasswordAuthentication=no -o StrictHostKeyChecking=no " + hostName;
-        pb = new ProcessBuilder("/bin/bash", "-c", command);
-        pr = pb.start();
-        pr.waitFor();
         recordProcessIds(pName, hostName, logFile);
       }
     } catch (IOException e) {
       String s = "Problem while starting the process : " + pr;
-      throw new TestException(s, e);
-    } catch (InterruptedException e) {
-      String s = "Exception occurred while waiting for the process execution : " + pr;
       throw new TestException(s, e);
     }
   }
@@ -1895,9 +1877,10 @@ public class SnappyTest implements Serializable {
     ProcessBuilder pb;
     Process pr = null;
     try {
+      command = "ssh -n -x -o PasswordAuthentication=no -o StrictHostKeyChecking=no " + hostName;
       if (pName.equals("Master"))
         command = "ps ax | grep -w " + pName + " | grep -v grep | awk '{print $1}'";
-      else command = "jps | grep " + pName + " | awk '{print $1}'";
+      else command += " jps | grep " + pName + " | awk '{print $1}'";
       hd = TestConfig.getInstance().getMasterDescription()
           .getVmDescription().getHostDescription();
       pb = new ProcessBuilder("/bin/bash", "-c", command);
@@ -2314,6 +2297,29 @@ public class SnappyTest implements Serializable {
     return command;
   }
 
+  public String getLog4jFile(String dest) {
+    String log4jFileName = "";
+    try {
+      log4jFileName = getCurrentDirPath() + File.separator + "log4j_" + getMyTid() + ".properties";
+      Log.getLogWriter().info("log4j path :" + log4jFileName);
+      File log4jFile = new File(log4jFileName);
+      FileWriter fw = new FileWriter(log4jFile);
+      fw.write("log4j.rootCategory=DEBUG, file\n");
+      fw.write("log4j.appender.file=org.apache.log4j.RollingFileAppender\n");
+      fw.write("log4j.appender.file.append=true\n");
+      fw.write("log4j.appender.file.file=" + dest + "\n");
+      fw.write("log4j.appender.file.MaxFileSize=1GB\n");
+      fw.write("log4j.appender.file.MaxBackupIndex=10000\n");
+      fw.write("log4j.appender.file.layout=io.snappydata.log4j.PatternLayout\n");
+      fw.write("log4j.appender.file.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss.SSS zzz} %t %p %c{1}: %m%n\n");
+      fw.close();
+    } catch (IOException e) {
+      throw new TestException("IOException occurred while retriving log4j file at path " +
+          log4jFileName + "\nError Message:" + e.getMessage());
+    }
+    return log4jFileName;
+  }
+
   public void executeSparkJob(Vector jobClassNames, String logFileName) {
     String snappyJobScript = getScriptLocation("spark-submit");
     boolean isCDCStream = SnappyCDCPrms.getIsCDCStream();
@@ -2321,6 +2327,7 @@ public class SnappyTest implements Serializable {
     File log = null, logFile = null;
     userAppJar = SnappyPrms.getUserAppJar();
     snappyTest.verifyDataForJobExecution(jobClassNames, userAppJar);
+    boolean isSparkDebug = SnappyPrms.isSparkDebugEnabled();
     try {
       for (int i = 0; i < jobClassNames.size(); i++) {
         String userJob = (String) jobClassNames.elementAt(i);
@@ -2342,13 +2349,16 @@ public class SnappyTest implements Serializable {
             throw new TestException("dml props for thread " + getMyTid() + " is null)");
           userAppArgs = userAppArgs + " " + dmlProps;
         }
+        String log4jFile = (isSparkDebug)?getLog4jFile(dest):"";
         if (SnappyCDCPrms.getIsCDC()) {
           command = setCDCSparkAppCmds(userAppArgs, commonArgs, snappyJobScript, userJob, masterHost, masterPort, logFile);
         } else {
           command = snappyJobScript + " --class " + userJob +
               " --master spark://" + masterHost + ":" + masterPort + " " +
               SnappyPrms.getExecutorMemory() + " " +
-              SnappyPrms.getSparkSubmitExtraPrms() + " " + commonArgs + " " + snappyTest.getUserAppJarLocation(userAppJar, jarPath) + " " +
+              SnappyPrms.getSparkSubmitExtraPrms() + " " + commonArgs + " " +
+              ((isSparkDebug)?(" --driver-java-options -Dlog4j.configuration=file://" + log4jFile):"") + " " +
+              snappyTest.getUserAppJarLocation(userAppJar, jarPath) + " " +
               userAppArgs + " " + primaryLocatorHost + ":" + primaryLocatorPort;
         }
         Log.getLogWriter().info("spark-submit command is : " + command);
@@ -2531,11 +2541,16 @@ public class SnappyTest implements Serializable {
         FileInputStream fis = new FileInputStream(commandOutput);
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         line = null;
-        String searchString = "Connection reset by peer";
+        String connResetErr = "Connection reset by peer";
+        String askTimedOutErr = "Ask timed out on ";
+        String noSuchJobID ="No such job ID";
         while ((line = br.readLine()) != null && !found) {
-          if (line.toLowerCase().contains(searchString.toLowerCase())) {
+          if (line.toLowerCase().contains(connResetErr.toLowerCase()) || line.toLowerCase().contains(askTimedOutErr.toLowerCase())) {
             found = true;
-            Log.getLogWriter().info("Connection reset by peer...");
+            Log.getLogWriter().info("Job submission failed with : " + line);
+          } else if(line.toLowerCase().contains(noSuchJobID.toLowerCase())){
+            Log.getLogWriter().info("Job ID " + str + " not found. Sleeping before proceeding test ... ");
+            sleepForMs(30);
           }
         }
         br.close();
@@ -2848,6 +2863,7 @@ public class SnappyTest implements Serializable {
    */
   public static synchronized void HydraTask_stopSnappyLeader() {
     File log = null;
+    if(snappyTest==null) snappyTest = new SnappyTest();
     try {
       ProcessBuilder pb = new ProcessBuilder(snappyTest.getScriptLocation("snappy-leads.sh"),
           "stop");
@@ -2870,6 +2886,7 @@ public class SnappyTest implements Serializable {
    */
   public static synchronized void HydraTask_stopSnappyServers() {
     File log = null;
+    if(snappyTest==null) snappyTest = new SnappyTest();
     try {
       ProcessBuilder pb = new ProcessBuilder(snappyTest.getScriptLocation("snappy-servers.sh"), "stop");
       log = new File(".");
@@ -2891,6 +2908,7 @@ public class SnappyTest implements Serializable {
    */
   public static synchronized void HydraTask_stopSnappyLocator() {
     File log = null;
+    if(snappyTest==null) snappyTest = new SnappyTest();
     try {
       ProcessBuilder pb = new ProcessBuilder(snappyTest.getScriptLocation("snappy-locators.sh")
           , "stop");
@@ -3610,13 +3628,16 @@ public class SnappyTest implements Serializable {
         if (!isPrimaryLeadUp) {
           for (int i = 0; i < 3; i++) {
             if (isPrimaryLeadUp) break;
+            sleepForMs(5);
             isPrimaryLeadUp = isPrimaryLeadUpAndRunning();
           }
         }
         if (cycleVms && !isPrimaryLeadUp) {
-          do {
+          for (int i = 0; i < 3; i++) {
+            if (isPrimaryLeadUp) break;
+            sleepForMs(5);
             isPrimaryLeadUp = isPrimaryLeadUpAndRunning();
-          } while (isPrimaryLeadUp);
+          }
         }
         if (!isPrimaryLeadUp) {
           throw new TestException("Primary lead node is not up and running in the cluster.");

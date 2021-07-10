@@ -11,7 +11,7 @@ TASK       taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = Hy
            maxTimesToRun = 3
            ;
 
-CLOSETASK  taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = restoreServerConfigData
-           threadGroups = snappyThreads;
+ENDTASK  taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = restoreServerConfigData
+         clientNames = locator1;
 
 io.snappydata.hydra.testDMLOps.SnappySchemaPrms-isHATest = true;

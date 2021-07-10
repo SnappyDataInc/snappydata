@@ -870,6 +870,7 @@ public class SnappyDMLOpsUtil extends SnappyTest {
           Log.getLogWriter().info("Executing batch statement for insert.");
           snappyPS.executeBatch();
           if (hasDerbyServer) derbyPS.executeBatch();
+          Log.getLogWriter().info("Executed batch statement for insert.");
           batchCnt = 0;
         }
       }
@@ -877,6 +878,7 @@ public class SnappyDMLOpsUtil extends SnappyTest {
       if(!isPopulate)  SnappyConsistencyTest.waitForBarrier(tid + "", 2);
       snappyPS.executeBatch();
       snappyPS.close();
+      Log.getLogWriter().info("Executed the batch.");
       if(!isPopulate)  SnappyConsistencyTest.waitForBarrier(tid + "", 2);
       if (hasDerbyServer) {
         derbyPS.executeBatch();

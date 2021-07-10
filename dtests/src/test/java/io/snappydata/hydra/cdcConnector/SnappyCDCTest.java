@@ -107,8 +107,9 @@ public class SnappyCDCTest extends SnappyTest {
   }
 
   public void performRebalance() {
+    Connection conn = null;
     try {
-      Connection conn = SnappyTest.getLocatorConnection();
+      conn = SnappyTest.getLocatorConnection();
       Long startTime = System.currentTimeMillis();
       conn.createStatement().execute("call sys.rebalance_all_buckets();");
       Long endTime = System.currentTimeMillis();
@@ -116,6 +117,9 @@ public class SnappyCDCTest extends SnappyTest {
       Log.getLogWriter().info("The rebalance procedure took  " + totalTime + " ms");
     } catch (SQLException ex) {
       throw new util.TestException("Caught exception in performRebalance() " + ex.getMessage());
+    } finally {
+      if(conn!=null)
+        closeConnection(conn);
     }
   }
 

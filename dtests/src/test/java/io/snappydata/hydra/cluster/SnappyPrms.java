@@ -693,6 +693,11 @@ public class SnappyPrms extends BasePrms {
   public static Long numRowsList;
 
   /**
+   *(boolean) Property to enable debugging at spark level.
+   */
+  public static Long enableSparkDebug;
+
+  /**
    * (int)Number of stack dumps to be taken for each thread of locators, servers, leads
    */
   public static Long numOfStackDumpItr;
@@ -997,6 +1002,11 @@ public class SnappyPrms extends BasePrms {
   public static String getLogFileName() {
     Long key = logFileName;
     return tasktab().stringAt(key, null);
+  }
+
+  public static boolean isSparkDebugEnabled(){
+    Long key = enableSparkDebug;
+    return tasktab().booleanAt(key, false);
   }
 
   public static Vector getSQLScriptNames() {

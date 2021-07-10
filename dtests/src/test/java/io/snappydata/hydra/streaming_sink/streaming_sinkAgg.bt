@@ -3,21 +3,21 @@ io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkWithSum.conf
   B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
-  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
 
 io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkWithAvg.conf
   A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
   B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
-  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
 
 io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkWithJoin.conf
   A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
   B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
-  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
 
 io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkSmartConnectorModeWithCount.conf
   A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
@@ -25,7 +25,7 @@ io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkSmartConnectorMode
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
     D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
   kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
-  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
 
 io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkSmartConnectorModeWithJoin.conf
   A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
@@ -33,4 +33,26 @@ io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkSmartConnectorMode
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
   kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
-  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=update
+
+io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkWithSum.conf
+  A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
+  B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
+  C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=complete
+
+io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkWithAvg.conf
+  A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
+  B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
+  C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=complete
+
+io/snappydata/hydra/streaming_sink/streamingAgg/streaming_sinkSmartConnectorModeWithJoin.conf
+  A=snappyStore snappyStoreHosts=3 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
+  B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
+  C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
+  kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
+  opType=0 isRowTable=false isPartitioned=true withKeyColumn=true outputMode=complete

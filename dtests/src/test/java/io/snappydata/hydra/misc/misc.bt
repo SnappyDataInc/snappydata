@@ -39,14 +39,13 @@ io/snappydata/hydra/testDMLOps/testDMLOpsCatalogConsistencyWithDDLs.conf
   D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
   persistenceMode="sync" redundantCopies=1
 
-
 io/snappydata/hydra/streaming_sink/smartConnector/streaming_sinkAppCatalogConsistencyWithDDLs.conf
   A=snappyStore snappyStoreHosts=2 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
   B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
-  persistenceMode="sync" redundantCopies=1
-
+  kafkaDir="/export/shared/QA_DATA/kafka_2.11-0.10.2.2"
+  opType=4 isRowTable=false isPartitioned=true withKeyColumn=true
 
 io/snappydata/hydra/testDMLOps/testDMLOpsCatalogConsistencyWithRebalance.conf
   A=snappyStore snappyStoreHosts=2 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
@@ -55,13 +54,9 @@ io/snappydata/hydra/testDMLOps/testDMLOpsCatalogConsistencyWithRebalance.conf
   D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
   persistenceMode="sync" redundantCopies=1
 
-
 io/snappydata/hydra/testDMLOps/testDMLOpsCatalogConsistencyWithAddNewNodeRebalance.conf
   A=snappyStore snappyStoreHosts=2 snappyStoreVMsPerHost=1 snappyStoreThreadsPerVM=2
   B=lead leadHosts=1 leadVMsPerHost=1 leadThreadsPerVM=2
   C=locator locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   D=worker workerHosts=2 workerVMsPerHost=1 workerThreadsPerVM=1
   persistenceMode="sync" redundantCopies=1
-  logPath=
-  newNode=
-  snappyPath=

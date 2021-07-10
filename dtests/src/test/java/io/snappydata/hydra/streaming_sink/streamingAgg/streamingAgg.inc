@@ -1,6 +1,6 @@
 TASK     taskClass   = io.snappydata.hydra.adAnalytics.SnappyAdAnalyticsTest taskMethod = HydraTask_generateAndPublishMethod
     //io.snappydata.hydra.cluster.SnappyPrms-streamingJobClassNames = "io.snappydata.hydra.streaming_sink.StringMessageProducer"
-io.snappydata.hydra.cluster.SnappyPrms-appPropsForJobServer = "400000,streamingSinkTopic,200000,4"
+io.snappydata.hydra.cluster.SnappyPrms-appPropsForJobServer = "400000,streamingSinkTopic,500000,0"
 io.snappydata.hydra.cluster.SnappyPrms-userAppJar = snappydata-store-scala-tests*tests.jar
 threadGroups = leadThread
 maxTimesToRun = 1;

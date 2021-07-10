@@ -4,14 +4,11 @@ io.snappydata.hydra.cluster.SnappyPrms-cycleVms = true;
 util.StopStartPrms-stopModes = NICE_KILL;
 util.StopStartPrms-numVMsToStop = 1;
 
-INITTASK    taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = backUpServerConfigData
-            threadGroups = snappyThreads;
-
 TASK       taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = HydraTask_cycleStoreVms
            startInterval = 60
-           threadGroups = leadThread
+           threadGroups = snappyThreads
            io.snappydata.hydra.cluster.SnappyPrms-sleepTimeSecsBeforeRestart = 60
            maxTimesToRun = 1;
 
-CLOSETASK  taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = restoreServerConfigData
-           threadGroups = snappyThreads;
+ENDTASK  taskClass   = io.snappydata.hydra.cluster.SnappyTest taskMethod  = restoreServerConfigData
+         clientNames = locator1;
