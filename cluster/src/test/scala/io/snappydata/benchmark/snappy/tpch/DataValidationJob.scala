@@ -57,45 +57,30 @@ object DataValidationJob extends SnappySQLJob {
     for (query <- queries) {
       println(s"For Query $query")
 
-      if (!isDynamic) {
-        val expectedFile = sc.textFile(s"file://$expectedResultsAvailableAt/1_Spark_$query.out")
+      val expectedFile = sc.textFile(s"file://$expectedResultsAvailableAt/1_Spark_${query}_Results.out")
 
-        val actualFile = sc.textFile(s"file://$actualResultsAvailableAt/1_Snappy_$query.out")
+      val actualFile = sc.textFile(s"file://$actualResultsAvailableAt/1_Snappy_${query}_Results.out")
 
-        val expectedLineSet = expectedFile.collect().toList.sorted
-        val actualLineSet = actualFile.collect().toList.sorted
+      val expectedLineSet = expectedFile.collect().toList.sorted
+      val actualLineSet = actualFile.collect().toList.sorted
 
-        if (!actualLineSet.equals(expectedLineSet)) {
-          if (!(expectedLineSet.size == actualLineSet.size)) {
-            resultOutputStream.println(s"For $query " +
-                s"result count mismatched observed with " +
-                s"expected ${expectedLineSet.size} and actual ${actualLineSet.size}")
-          } else {
-            for ((expectedLine, actualLine) <- expectedLineSet zip actualLineSet) {
-              if (!expectedLine.equals(actualLine)) {
-                resultOutputStream.println(s"For $query result mismatched observed")
-                resultOutputStream.println(s"Expected  : $expectedLine")
-                resultOutputStream.println(s"Found     : $actualLine")
-                resultOutputStream.println(s"-------------------------------------")
-              }
+      if (!actualLineSet.equals(expectedLineSet)) {
+        if (!(expectedLineSet.size == actualLineSet.size)) {
+          resultOutputStream.println(s"For $query " +
+              s"result count mismatched observed with " +
+              s"expected ${expectedLineSet.size} and actual ${actualLineSet.size}")
+        } else {
+          for ((expectedLine, actualLine) <- expectedLineSet zip actualLineSet) {
+            if (!expectedLine.equals(actualLine)) {
+              resultOutputStream.println(s"For $query result mismatched observed")
+              resultOutputStream.println(s"Expected  : $expectedLine")
+              resultOutputStream.println(s"Found     : $actualLine")
+              resultOutputStream.println(s"-------------------------------------")
             }
           }
         }
-      } else {
-        val firstRunFileName = s"Snappy_${query}_FirstRun.out"
-        val firstRunFile = sc.textFile(firstRunFileName)
-
-        val secondRunFileName = s"Snappy_${query}_SecondRun.out"
-        val secondRunFile = sc.textFile(secondRunFileName)
-
-        val expectedLineSet = firstRunFile.collect().toList.sorted
-        val actualLineSet = secondRunFile.collect().toList.sorted
-
-        if (actualLineSet.equals(expectedLineSet)) {
-          resultOutputStream.println(s"For $query result matched observed")
-          resultOutputStream.println(s"-------------------------------------")
-        }
       }
+
     }
     // scalastyle:on
     resultOutputStream.close()
